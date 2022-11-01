@@ -9,8 +9,23 @@ on:
 jobs:
   # This can be any name you want, we'll call it "tests"
   tests: 
-    # Pick an operating system
-    runs-on: ubuntu-latest
+    # Use substitution since we have a matrix: access the key that we called runs-on
+    name: Test ${{ matrix.runs-on }}
+  
+    runs-on: ${{ matrix.runs-on }}
+    
+    # Matrix: setting up multiple runs
+    strategy:
+      
+      fail-fast: false 
+      
+      matrix: 
+        # We will name the key based on what we want to fill it with, but this isn't required
+        runs-on: 
+          # Inside this we want a list
+          - ubuntu-latest
+          - windows-latest
+    
     steps:
       # See https://github.com/actions/checkout. These are actually GitHub repositories
       # "This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
@@ -22,7 +37,7 @@ jobs:
           python-version: "3.11"
           
       # The second type of possible action. 
-      - name: Install packagae and test requirements
+      - name: Install package and test requirements
         run: python -m pip install .[test]
 
       
