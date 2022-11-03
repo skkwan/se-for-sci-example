@@ -6,20 +6,18 @@ on:
   releases:
     types:
       - publish
-     
+
 jobs:
   build:
     # We always need a "runs-on"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       # This is all we need: "pipx is a tool to help you install and run end-user applications written in Python"
       - run: pipx run build
-      
+
       # Artifacts are files that we create: they can be accessed in the same or in different jobs
       - uses: actions/upload-artifact@v3
         with:
           path: dist/*
-          
-    
