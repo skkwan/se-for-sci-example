@@ -1,19 +1,19 @@
 on:
   # Actions upon pull
-  pull_request: 
+  pull_request:
   # Actions upon push: this says to only run the ci/cd to pushes on main
   push:
     branches:
       - main
-      
+
 concurrency:
   # Two runs can't happen at the same time with cancel-in-progress true
-  group: ${{ github.workflow }}-${{ github.ref }} 
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-      
+
 jobs:
   # The jobs can be any name you want, we'll call it "lint"
-  lint: 
+  lint:
     name: Lint
     runs-on: ubuntu-latest
     # Not a matrix, we don't need a 'strategy'. We just have steps
@@ -25,45 +25,45 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "3.x"
-      # This action will run pre-commit/action: https://github.com/pre-commit/action 
+      # This action will run pre-commit/action: https://github.com/pre-commit/action
       # On the right-hand tab we see it says the latest version is 3.0.0
       - uses: pre-commit/action@v3.0.0
-      
 
-  tests: 
-    # Put a list (square brackets) and the contents are the jobs which appeared earlier, 
-    # or:   needs: 
+
+  tests:
+    # Put a list (square brackets) and the contents are the jobs which appeared earlier,
+    # or:   needs:
     #          - lint
-    needs: [lint]  
-    
+    needs: [lint]
+
     # Use substitution since we have a matrix: access the key that we called runs-on
     name: Test ${{ matrix.runs-on }}
     runs-on: ${{ matrix.runs-on }}
-    
+
     # Matrix: setting up multiple runs
     strategy:
-      
-      fail-fast: false 
-      
-      matrix: 
+
+      fail-fast: false
+
+      matrix:
         # We will name the key based on what we want to fill it with, but this isn't required
-        runs-on: 
+        runs-on:
           # Inside this we want a list
           - ubuntu-latest
           - windows-latest
-    
+
     steps:
       # See https://github.com/actions/checkout. These are actually GitHub repositories
       # "This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       - uses: actions/checkout@v3
-      
+
       # You can set up things specific to a single action with "with:"
       - uses: actions/setup-python@v4
-        with: 
+        with:
           python-version: "3.11"
-          
-      # The second type of possible action. 
+
+      # The second type of possible action.
       - name: Install package and test requirements
         run: python -m pip install .[test]
 
-      
+
