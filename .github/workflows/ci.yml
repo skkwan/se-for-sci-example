@@ -6,6 +6,11 @@ on:
     branches:
       - main
       
+concurrency:
+  # Two runs can't happen at the same time with cancel-in-progress true
+  group: ${{ github.workflow }}-${{ github.ref }} 
+  cancel-in-progress: true
+      
 jobs:
   # This can be any name you want, we'll call it "tests"
   tests: 
