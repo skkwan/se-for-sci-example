@@ -12,11 +12,32 @@ concurrency:
   cancel-in-progress: true
       
 jobs:
-  # This can be any name you want, we'll call it "tests"
+  # The jobs can be any name you want, we'll call it "lint"
+  lint: 
+    name: Lint
+    runs-on: ubuntu-latest
+    # Not a matrix, we don't need a 'strategy'. We just have steps
+    steps:
+      # The first step is nearly always some kind of checkout: otherwise it is just sitting in
+      # an empty directory. You can checkout your own, other repositories, recursive checkout, etc.
+      - uses: actions/checkout@v3
+      # This hook reqiures Python
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      # This action will run pre-commit/action: https://github.com/pre-commit/action 
+      # On the right-hand tab we see it says the latest version is 3.0.0
+      - uses: pre-commit/action@v3.0.0
+      
+
   tests: 
+    # Put a list (square brackets) and the contents are the jobs which appeared earlier, 
+    # or:   needs: 
+    #          - lint
+    needs: [lint]  
+    
     # Use substitution since we have a matrix: access the key that we called runs-on
     name: Test ${{ matrix.runs-on }}
-  
     runs-on: ${{ matrix.runs-on }}
     
     # Matrix: setting up multiple runs
