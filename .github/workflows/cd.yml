@@ -3,7 +3,7 @@ name: CD
 on:
   # You can manually trigger a workflow run using the GitHub API, GitHub CLI, or GitHub browser interface
   workflow_dispatch:
-  releases:
+  release:
     types:
       - publish
 
@@ -20,4 +20,23 @@ jobs:
       # Artifacts are files that we create: they can be accessed in the same or in different jobs
       - uses: actions/upload-artifact@v3
         with:
+          name: artifact
           path: dist/*
+          
+  publish:
+    runs-on: ubuntu-latest
+    
+    # Filters out 
+    if: github.event_name == 'release' && github.event.action == 'published'
+    
+    steps:
+      - uses: actions/download-artifact@v3
+        with: 
+          name: artifact
+          path: dist
+      
+      - uses: pypa/gh-action-pypi-publish@v1.5.1
+        with:
+          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.pypi_password }}
+      
